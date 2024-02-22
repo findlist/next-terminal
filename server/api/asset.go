@@ -28,7 +28,15 @@ func (assetApi AssetApi) AssetCreateEndpoint(c echo.Context) error {
 
 	account, _ := GetCurrentAccount(c)
 	m["owner"] = account.ID
-
+	license, err := service.LicenseService.GetLicense()
+	if err != nil {
+		return errors.New("请检查授权")
+	}
+	assetNum := int64(license.Asset)
+	total, err := repository.AssetRepository.Count(context.TODO())
+	if total >= assetNum {
+		return errors.New("资产数量超出授权")
+	}
 	if _, err := service.AssetService.Create(context.TODO(), m); err != nil {
 		return err
 	}

@@ -89,6 +89,8 @@ func setupRoutes() *echo.Echo {
 	LoginPolicyApi := new(api.LoginPolicyApi)
 	StorageLogApi := new(api.StorageLogApi)
 	AuthorisedApi := new(api.AuthorisedApi)
+	LicenseApi := new(api.LicenseApi)
+	NetWork := new(api.NetWorkApi)
 
 	e.POST("/login", accountApi.LoginEndpoint)
 
@@ -356,6 +358,20 @@ func setupRoutes() *echo.Echo {
 		authorised.DELETE("/:id", AuthorisedApi.Delete)
 	}
 
+	license := e.Group("/license", mw.Admin)
+	{
+		license.GET("/machine-id", LicenseApi.MachineIdLicense)
+		license.GET("", LicenseApi.License)
+		license.DELETE("/:id", LicenseApi.LicenseDelete)
+		license.PUT("", LicenseApi.LicenseUpdate)
+		license.POST("", LicenseApi.LicenseCreate)
+		license.POST("/mi", LicenseApi.LicenseMi)
+	}
+	netWork := e.Group("/netWork", mw.Admin)
+	{
+		netWork.GET("", NetWork.GetNetWork)
+		netWork.POST("", NetWork.AddNetWork)
+	}
 	e.GET("/menus", RoleApi.TreeMenus, mw.Admin)
 
 	return e
